@@ -2,10 +2,10 @@ library(plyr)
 library(ggplot2)
 library(doBy)        #
 library(reshape2)
-path1 <- 'C:/Users/au384062/Dropbox/Projects/ADAM/OP_JUBILEE/SBLUP/Basis_RL/Presel20/Presel20geneticTrendsMeans.res' 
-path2 <- 'C:/Users/au384062/Dropbox/Projects/ADAM/OP_JUBILEE/SBLUP/Basis/BasisgeneticTrendsMeans.res'
-path3 <- 'C:/Users/au384062/Dropbox/Projects/ADAM/OP_JUBILEE/SBLUP/Basis_RL_SP/Presel20/Presel20geneticTrendsMeans.res'
-path4 <-  'C:/Users/au384062/Dropbox/Projects/ADAM/OP_JUBILEE/SBLUP/Basis_SP/Basis/BasisgeneticTrendsMeans.res'
+path1 <- '' 
+path2 <- ''
+path3 <- ''
+path4 <-  ''
 
 name1 <- 'SBLUP_RL_Presel20'
 name2 <- "SBLUP_basis"

@@ -12,29 +12,29 @@ root <-
 # NOTE: if the TEV is in a seperate line from economicValueTbv= , then this function will fail miserably, since mine are all like that
 # i can't be bothered to make a check for that and a different method if it is in another line, it should be relatively simple
 
+# TODO 
+# currently it is not possible to switch out an dmu observation matrix if there is no design matrix changes
+
 LarissaFixMyPrmFiles <-
   function (root,
             # the highest directory in which the functions works, searches in all lower directories for prm file
             new_gmat = 0,            # gmatrix to replace
-            new_designmat = 0,
+            new_designmat = 0,      # new designmatric
             new_tev = 0 ,           # new vector for true economic values
             new_ev = 0,             # new vector for economic values
             new_ebvobs = 0,         # for namelist DMU
-            new_resmat = 0,         # new residual matrix
+            new_resmat = 0,         # new residual matrix (WDirectError)
             org_gmat = 0,           # gmatrix to be replaced
-            org_designmat = 0,
+            org_designmat = 0,      # orginal designmatrix
             org_ebvobs = 0,         # for namelist DMU
-            org_ev = 0,
-            org_resmat = 0)
+            org_ev = 0,             # orginal economic values
+            org_resmat = 0)         # orginal residuals (WDirectError)
   {
     # browser()
 # for some dire reason this check doesnt work anymore, something to do with working directory i think
      # if (file.exists(root) == FALSE) {
      #   stop("folder root does not exit")
      # }
-    if ((is.matrix(new_gmat) == TRUE &
-         is.matrix(new_resmat) == TRUE) == FALSE) {
-      stop("Need to supply both residual and gmatrix when")
     }
     if ((is.matrix(new_gmat) == TRUE &
          is.matrix(new_designmat) == FALSE) == FALSE)
@@ -226,7 +226,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
                 paste("nebv=", number_of_traits_old, sep = ""),
                 paste("nebv=", number_of_traits_new, sep = "")
               )
-          } # function to check if the number of ebv is the same as the number of traits, is it is, it replaces the value
+          } # function to check if the number of ebv is the same as the number of traits, if it is, it replaces the value
           
         }
 }        # check if there is a dmu obs
