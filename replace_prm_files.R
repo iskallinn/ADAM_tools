@@ -28,9 +28,10 @@ LarissaFixMyPrmFiles <-
             org_designmat = 0,      # orginal designmatrix
             org_ebvobs = 0,         # for namelist DMU
             org_ev = 0,             # orginal economic values
-            org_resmat = 0)         # orginal residuals (WDirectError)
+            org_resmat = 0,         # orginal residuals (WDirectError)
+            org_tev = 0 )           # orginal tev
   {
-    browser()
+    # browser()
 # for some dire reason this check doesnt work anymore, something to do with working directory i think
      # if (file.exists(root) == FALSE) {
      #   stop("folder root does not exit")
@@ -54,7 +55,8 @@ LarissaFixMyPrmFiles <-
       writeLines(prm_file, paste(path, "bak", sep = "_")) # write backup of each file
       prm_file <- gsub(pattern="\t", replacement = " ", x=prm_file) # remove all tabs from the input file, makes life easier
     # I begin by checking if the org_gmatrix argument fits to the matrix in the i'th prm file
-        pos  <-
+if (is.matrix(org_gmat) == TRUE) { 
+  pos  <-
         grep(prm_file, pattern = "polygenicMatrix") # find where the gmatrix begins
     ############# Checks ################
       gmatrix.check <- (FALSE %in% (matrix(
@@ -64,18 +66,29 @@ LarissaFixMyPrmFiles <-
         nrow = nrow(org_gmat),
         ncol = ncol(org_gmat)
       ) == org_gmat) == FALSE)
-        pos  <-
+} else if (is.matrix(org_gmat) == FALSE ) { 
+  gmatrix.check <- FALSE
+  }  
+      pos  <-
           grep(prm_file, pattern = "residualMatrix") # find where the residual matrix begins
         # tests that the resmatrix from input.prm is the same as the org_gmat from input
         # it only passes the test if all values of gmatrix are the same as from the input
-      resmatrix.check <-  (FALSE %in% (matrix(
+if ( is.matrix(org_resmat) == TRUE ) 
+  {      
+  resmatrix.check <-  (FALSE %in% (matrix(
           c((as.numeric(
             unlist(str_split(prm_file[(pos + 1):(pos + nrow(org_gmat + 1))], pattern = " "))
           ))),
           nrow = nrow(org_resmat),
           ncol = ncol(org_resmat)
         ) == org_resmat) == FALSE)
-      design.check <- ( is.matrix(new_designmat) == TRUE & is.matrix(org_designmat == TRUE)) # check if the program should bother with designmat
+} else if (is.matrix(org_resmat) == FALSE ) { 
+  resmatrix.check <- FALSE 
+  }     
+
+  
+    design.check <- ( is.matrix(new_designmat) == TRUE & is.matrix(org_designmat == TRUE)) # check if the program should bother with designmat
+              
       ########### Design matrices and number of traits ##############
       if (design.check == TRUE) {
         pos  <-
@@ -280,12 +293,17 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
           # it only passes the test if all values of gmatrix are the same as from the input
           if ( gmatrix.check == TRUE ) {
             for (i in 1:nrow(new_gmat)) {
+              pos  <-
+                grep(prm_file, pattern = "polygenicMatrix")
               prm_file[pos + i] <- paste0(new_gmat[i,], collapse = " ")
             }
             prm_file <- prm_file[-(pos + nrow(org_gmat))]
-            
+           }
+          
             # for cases where the replacement matrix is larger than the original
-            if (nrow(org_gmat) < nrow(new_gmat)) {
+          } else if (nrow(org_gmat) < nrow(new_gmat)) {
+            pos  <-
+              grep(prm_file, pattern = "polygenicMatrix")
               prm_file <-
                 append(prm_file, "", pos + nrow(new_gmat)) # first add an empty value at the end of the current matrix
               for (i in 1:nrow(new_gmat)) {
@@ -293,15 +311,17 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
                 prm_file[pos + i] <- paste0(new_gmat[i,], collapse = " ")
               }
             } else if (nrow(org_gmat) == nrow(new_gmat)) {
+              pos  <-
+                grep(prm_file, pattern = "polygenicMatrix")
               for (i in 1:nrow(new_gmat)) {
                 # replace the values
                 prm_file[pos + i] <- paste0(new_gmat[i,], collapse = " ")
               }
               
-            }
-          }
-        } # close for gmatrix replacement
-      }
+            } 
+          } # close for gmatrix replacement
+         
+      
       ########## Exchange Residual matrix ############
       # browser()
       if (is.matrix(new_resmat) == TRUE) {
@@ -312,12 +332,16 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
           if (nrow(org_resmat) > nrow(new_resmat)) {
             # in case the orginal is larger than the replacement
             for (i in 1:nrow(new_resmat)) {
+              pos  <-
+                grep(prm_file, pattern = "residualMatrix")
               prm_file[pos + i] <- paste0(new_resmat[i,], collapse = " ")
             }
             prm_file <- prm_file[-(pos + nrow(org_resmat))]
             
           } else if (nrow(org_resmat) < nrow(new_resmat)) {
             # for cases where the replacement matrix is larger than the original
+            pos  <-
+              grep(prm_file, pattern = "residualMatrix")
             prm_file <-
               append(prm_file, "", pos + nrow(new_resmat)) # first add an empty value at the end of the current matrix
             for (i in 1:nrow(new_resmat)) {
@@ -325,6 +349,8 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
               prm_file[pos + i] <- paste0(new_resmat[i,], collapse = " ")
             }
           } else if (nrow(org_resmat) == nrow(new_resmat)) {
+            pos  <-
+              grep(prm_file, pattern = "residualMatrix")
             for (i in 1:nrow(new_resmat)) {
               # replace the values
               prm_file[pos + i] <- paste0(new_resmat[i,], collapse = " ")
@@ -335,7 +361,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
       # browser()
       ########## Replace TBV ############
       if (is.vector(new_tev) == TRUE &
-          is.vector(new_tev)) {
+          new_ev != 0) {
         # first check if the input is there
         pos  <-
           grep(prm_file, pattern = "economicValueTbv") # find where the line with the TEV is located
@@ -353,9 +379,9 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
         }
         
       }
-      ########## Replace EVs ############
-      if (is.vector(new_tev) == TRUE &
-          is.vector(new_tev)) {
+      ########## Replace True economic values ############
+      if (is.vector(new_ev) == TRUE &
+          new_ev != 0) {
         # check for input
         pos  <-
           grep(prm_file, pattern = "nEconomicValueEbv") # find where the line with the EV is located
