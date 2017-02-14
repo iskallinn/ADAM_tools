@@ -105,6 +105,8 @@ writeLines(prior.file, paste(path, "bak", sep = "_")) # write backup of each fil
     closeAllConnections()
   } 
   # next portion is to make parm files where there are none
+  
+if (length(missing.prior) != 0)  {  
   for ( i in length (missing.prior) ) { 
     prior.file <- file(description =paste( missing.prior [i], "dmu.polyblup.parm", sep ='') , open = 'w')
     path <- paste(missing.prior, "dmu.polyblup.parm", sep="")
@@ -167,6 +169,7 @@ for ( i in 1:nrow( prm_rm ) ) {
     
     
   }
+}
   closeAllConnections()
   
 } 

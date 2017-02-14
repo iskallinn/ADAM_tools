@@ -447,16 +447,16 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
   } # close of function
 
 # this function is for quickly replacing the prm files with their backup, in case of some fuck up
-# IScrewedUpPrm <- function( root ) {
-#   prmfiles <-  list.files(pattern = "*.prm_bak$", recursive = T)
-#   orgs <- list.files(pattern = "*.prm$", recursive = T)
-#   for ( i in 1:length(prmfiles)) {
-#     path <- paste(root, prmfiles[i], sep= "/")
-#     org_path <- paste(root, orgs[i], sep= "/")
-#     prm_file <-  readLines(path)
-#     writeLines(prm_file,org_path) # write backups as prm
-#   }
-# }
+IScrewedUpPrm <- function( root ) {
+  prmfiles <-  list.files(path = root, pattern = "*.prm_bak$", recursive = T)
+  orgs <- list.files(path = root,pattern = "*.prm$", recursive = T)
+  for ( i in 1:length(prmfiles)) {
+    path <- paste(root, prmfiles[i], sep= "/")
+    org_path <- paste(root, orgs[i], sep= "/")
+    prm_file <-  readLines(path)
+    writeLines(prm_file,org_path) # write backups as prm
+  }
+}
 #
 # FixMyPrm(
 # root, # the highest directory in which the functions works, searches in all lower directories for prm files

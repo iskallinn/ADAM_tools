@@ -13,17 +13,18 @@ pos.illegals <- grep(pattern = "illegal obs numb in MaleObservations", x= log.fi
 
 for ( i in 1:length(pos.illegals)) { 
   if ( i == 2) { 
-    browser()
+    # browser()
     }
   prm_path <- str_trim(unlist(str_split(log.file[pos.illegals[i]], pattern = "="))[2])
   prm_file <- readLines(prm_path)
   
-  nobs <- unlist(str_split(prm_file[ grep(pattern = "nobs", x= prm_file)], pattern = "="))[2]# figure out how many observations are legal
+  nobs <- as.numeric(unlist(str_split(prm_file[ grep(pattern = "nobs", x= prm_file)], pattern = "="))[2])# figure out how many observations are legal
   pos  <-
     grep(prm_file, pattern = "MaleObservations") # figure out the range where the obs lines are located
   pos1  <-
     grep(prm_file, pattern = "FemaleObservations") # 
-  del <- grep(x=prm_file[pos:pos1],pattern = paste("(\\s)(",max.obs.numb+1,")","(.*)", sep=""))
+  max.obs.numb <- nobs+1
+  del <- grep(x=prm_file[pos:pos1],pattern = paste("(\\s)(",max.obs.numb,")","(.*)", sep=""))
   
   for (k in 1:length(del)) { 
     # k <- k+1
@@ -41,6 +42,7 @@ for ( i in 1:length(pos.illegals)) {
     grep(prm_file, pattern = "FemaleObservations") # 
   
   numb.obs <- as.integer(length( grep(x=prm_file[pos:pos1],pattern = "(\\s)(\\d)(\\s).*")))
+  max.obs.numb <- nobs+1
   pos  <-
     grep(prm_file, pattern = "nMaleObs") # 
   prm_file[pos] <- paste("nMaleObs=",numb.obs, sep = "")
@@ -49,7 +51,7 @@ for ( i in 1:length(pos.illegals)) {
     grep(prm_file, pattern = "FemaleObservations") # figure out the range where the obs lines are located
   pos1  <-
     grep(prm_file[pos:length(prm_file)], pattern = "/") # 
-  del <- grep(x=prm_file[pos:(pos+pos1[1])],pattern = paste("(\\s)(",max.obs.numb+1,")","(.*)", sep=""))
+  del <- grep(x=prm_file[pos:(pos+pos1[1])],pattern = paste("(\\s)(",max.obs.numb,")","(.*)", sep=""))
   
   for (k in 1:length(del)) { 
     # k <- k+1
