@@ -35,7 +35,7 @@ LarissaFixMyPrmFiles <-
      # if (file.exists(root) == FALSE) {
      #   stop("folder root does not exit")
      # }
-    }
+    
     if ((is.matrix(new_gmat) == TRUE &
          is.matrix(new_designmat) == FALSE) == FALSE)
       
