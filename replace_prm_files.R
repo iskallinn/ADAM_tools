@@ -30,7 +30,7 @@ LarissaFixMyPrmFiles <-
             org_ev = 0,             # orginal economic values
             org_resmat = 0)         # orginal residuals (WDirectError)
   {
-    # browser()
+    browser()
 # for some dire reason this check doesnt work anymore, something to do with working directory i think
      # if (file.exists(root) == FALSE) {
      #   stop("folder root does not exit")
@@ -421,16 +421,16 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
   } # close of function
 
 # this function is for quickly replacing the prm files with their backup, in case of some fuck up
-IScrewedUpPrm <- function( root ) {
-  prmfiles <-  list.files(pattern = "*.prm_bak$", recursive = T)
-  orgs <- list.files(pattern = "*.prm$", recursive = T)
-  for ( i in 1:length(prmfiles)) {
-    path <- paste(root, prmfiles[i], sep= "/")
-    org_path <- paste(root, orgs[i], sep= "/")
-    prm_file <-  readLines(path)
-    writeLines(prm_file,org_path) # write backups as prm
-  }
-}
+# IScrewedUpPrm <- function( root ) {
+#   prmfiles <-  list.files(pattern = "*.prm_bak$", recursive = T)
+#   orgs <- list.files(pattern = "*.prm$", recursive = T)
+#   for ( i in 1:length(prmfiles)) {
+#     path <- paste(root, prmfiles[i], sep= "/")
+#     org_path <- paste(root, orgs[i], sep= "/")
+#     prm_file <-  readLines(path)
+#     writeLines(prm_file,org_path) # write backups as prm
+#   }
+# }
 #
 # FixMyPrm(
 # root, # the highest directory in which the functions works, searches in all lower directories for prm files
@@ -445,3 +445,4 @@ IScrewedUpPrm <- function( root ) {
 # org_ebvobs ,
 # org_ev,
 # org_resmat )
+# LarissaFixMyPrmFiles(root=root, new_gmat = gmatrix_edit, org_gmat = org_gmat)
