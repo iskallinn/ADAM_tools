@@ -1,9 +1,9 @@
 # Function for manipulating prm files over whole directory structures, subdirectories, searching for prm files
 # install.packages("stringr") # <--- Need to install this
 library(stringr)
-
-root <-
-  "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/"
+# 
+# root <-
+#   "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/"
 
 # function is supposed to be dynamic so it is not necessary to utilize all the arguments in the function call, only those
 # the user wants to change out.
@@ -170,27 +170,39 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
             # loop for switching them when replacement is smaller than orginal
             # add lines
             #Zdirect
+            # browser()
             pos  <-
               grep(prm_file, pattern = "ZDirectGenetic") # find where the line with the TEV is located
             
             for (i in 1:nrow(new_designmat)) {
               prm_file[pos + i] <- paste0(new_designmat[i, ], collapse = " ")
+              if ( i == nrow(new_designmat)) { 
+                # browser()
+                prm_file <- prm_file[-((pos+i+((nrow(org_designmat) - nrow(new_designmat))-1)):(pos+i+(nrow(org_designmat) - nrow(new_designmat))))]
+              }
+              
             }
-            for (i in 1:(nrow(org_designmat) - nrow(new_designmat))) {
-              prm_file <-
-                prm_file[-(pos  + nrow(new_designmat) + i)] # remove extra lines
-            }
+            # for (i in 1:(nrow(org_designmat) - nrow(new_designmat))) {
+            #   prm_file <-
+            #     prm_file[-(pos  + nrow(new_designmat) + i)] # remove extra lines
+            # }
             
             #WDirectError
+            # browser()
             pos  <-
               grep(prm_file, pattern = "WDirectError") # find where the line with the design mat starts
             for (i in 1:nrow(new_designmat)) {
+
               prm_file[pos + i] <- paste0(new_designmat[i, ], collapse = " ")
+              if ( i == nrow(new_designmat)) { 
+                # browser()
+                prm_file <- prm_file[-((pos+i+((nrow(org_designmat) - nrow(new_designmat))-1)):(pos+i+(nrow(org_designmat) - nrow(new_designmat))))]
+                }
             }
-            for (i in 1:(nrow(org_designmat) - nrow(new_designmat))) {
-              prm_file <-
-                prm_file[-(pos + nrow(new_designmat) + i)] # remove extra lines
-            }
+            # for (i in 1:(nrow(org_designmat) - nrow(new_designmat))) {
+            #   prm_file <-
+            #     prm_file[-(pos + nrow(new_designmat) + i)] # remove extra lines
+            # }
           }
           pos <- pos + nrow(new_designmat)
           pos1 <-
@@ -296,8 +308,10 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
               pos  <-
                 grep(prm_file, pattern = "polygenicMatrix")
               prm_file[pos + i] <- paste0(new_gmat[i,], collapse = " ")
+              if (i > (nrow(new_gmat) - (nrow(org_gmat) - nrow(new_gmat) )) ) {
+                prm_file <- prm_file[ -( pos + i+ 1 ) ]
+              }
             }
-            prm_file <- prm_file[-(pos + nrow(org_gmat))]
            }
           
             # for cases where the replacement matrix is larger than the original
@@ -335,8 +349,12 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
               pos  <-
                 grep(prm_file, pattern = "residualMatrix")
               prm_file[pos + i] <- paste0(new_resmat[i,], collapse = " ")
-            }
-            prm_file <- prm_file[-(pos + nrow(org_resmat))]
+              if (i > (nrow(new_resmat) - (nrow(org_resmat) - nrow(new_resmat) )) ) {
+                prm_file <- prm_file[ -( pos + i+ 1 ) ]
+                }
+              }
+            
+            
             
           } else if (nrow(org_resmat) < nrow(new_resmat)) {
             # for cases where the replacement matrix is larger than the original
