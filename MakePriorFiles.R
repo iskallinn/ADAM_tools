@@ -6,6 +6,7 @@ library(stringr)
 root <- "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/"
 
 MakePriorFiles <- function ( root) {  
+  # browser()
   prmfiles <-
     list.files(path = root,
                pattern = "*.prm$",
@@ -50,17 +51,61 @@ writeLines(prior.file, paste(path, "bak", sep = "_")) # write backup of each fil
       # make such a check, for speed
       # TODO 2: vectorize this, for loops are slow!
     ######### Make new prior file if they do not match #######
+      pos <- grep(x = prm.file, pattern = "ntbv") # find the number of ebv
+      n.tbv <- as.numeric(unlist(str_split( pattern = "=", string = prm.file[pos]))[2])
       
       pos  <-
         grep(prm_file, pattern = "polygenicMatrix") # find where the gmatrix begins
       prm_gm <-  matrix(
         c((as.numeric(
-          unlist(str_split(prm_file[(pos + 1):(pos + nrow(gmatrix.from.prior + 1))], pattern = " "))
+          unlist(str_split(prm_file[(pos + 1):(pos + n.tbv)], pattern = " "))
         ))),
-        nrow = nrow(gmatrix.from.prior),
-        ncol = ncol(gmatrix.from.prior)
-      )
-      if ( T %in% (gmatrix.from.prior == prm_gm) == T) {
+        nrow = n.tbv,
+        ncol = n.tbv ) 
+      
+      if ( (F %in% (dim(gmatrix.from.prior)==dim(prm_gm)) == T)) {
+        logcon <-  paste(root,"prior.fix.log", sep = "/")
+        output <- file(description = path, open = "w")
+        cat("Priors written to dmu.polyblup.prm in file", path,"\n", file = logcon,append = T)
+        # cat("\n", file = logcon)
+        close(output)
+        outputfile <- path
+        for ( i in 1:nrow( prm_gm ) ) {
+          
+          for ( l in 1:ncol( prm_gm ) ) {
+            con <- file(description = outputfile, open = "a") 
+            if ( i <= l ) {  
+              cat( 1, i, l, prm_gm[ i,l ], file = con, sep = " " )
+              
+              cat("\n", file = con )
+              closeAllConnections()
+            }
+          }
+        }
+        pos  <-
+          grep(prm_file, pattern = "residualMatrix") # find where the gmatrix begins
+        prm_rm <-  matrix(
+          c((as.numeric(
+            unlist(str_split(prm_file[(pos + 1):(pos + n.tbv)], pattern = " "))
+          ))),
+          nrow = n.tbv,
+          ncol = n.tbv ) 
+        for ( i in 1:nrow( prm_rm ) ) {
+          
+          for ( l in 1:ncol( prm_rm ) ) {
+            con <- file(description = outputfile, open = "a") 
+            if ( i <= l ) {  
+              cat( 2, i, l, prm_rm[ i,l ], file = con, sep = " " )
+              
+              cat("\n", file = con )
+              closeAllConnections()
+            }
+          }
+        }
+        
+        
+      } else if ( (F %in% (dim(gmatrix.from.prior)==dim(prm_gm)) == F)) {
+        if (  (F %in% (gmatrix.from.prior == prm_gm) == T)) {
         logcon <-  paste(root,"prior.fix.log", sep = "/")
         output <- file(description = path, open = "w")
         cat("Priors written to dmu.polyblup.prm in file", path,"\n", file = logcon,append = T)
@@ -100,10 +145,11 @@ writeLines(prior.file, paste(path, "bak", sep = "_")) # write backup of each fil
           }
         }
         
-        
         }
+      }
     closeAllConnections()
-  } 
+      } 
+  
   # next portion is to make parm files where there are none
   
 if (length(missing.prior) != 0)  {  
@@ -141,14 +187,13 @@ suppressWarnings(    prm_gm <-   matrix(
       }
       pos  <-
         grep(prm_file, pattern = "residualMatrix") # find where the gmatrix begins
-suppressWarnings(      prm_rm <-  matrix(
-        c(as.numeric(
-          unlist(str_split(prm_file[(pos + 1):(pos + (nrow_prm + 1))], pattern = " "))
-        ))[is.na((as.numeric(
-          unlist(str_split(prm_file[(pos + 1):(pos + (nrow_prm + 1))], pattern = " "))
-        )))!=T],
-        nrow = nrow_prm,
-        ncol = nrow_prm))
+suppressWarnings(            prm_rm <-  matrix(
+  c((as.numeric(
+    unlist(str_split(prm_file[(pos + 1):(pos + n.tbv)], pattern = " "))
+  ))),
+  nrow = n.tbv,
+  ncol = n.tbv ) 
+)
 # note: the suppress warnings is just because the program looks for numerics to handle cases where the prm file has a "/" 
 # in the same line as the last line of the residual matrix
 for ( i in 1:nrow( prm_rm ) ) {
@@ -174,4 +219,4 @@ for ( i in 1:nrow( prm_rm ) ) {
   
 } 
 
-MakePriorFiles(root)
+# MakePriorFiles(root)

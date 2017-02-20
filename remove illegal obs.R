@@ -3,7 +3,7 @@
 # Note, this will not work if the first observation line is in the same line as MaleObservations\FemaleObservations=
 # Note, the function will crash IF the logfile is out of date, i.e. there are no checks to see if the file has been fixed
 
-log.path <- "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/genomic/log"
+log.path <- "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/log"
 # RemoveIllegalObs(log.path)
 RemoveIllegalObs <-  function ( log.path ) {  
   # browser()
