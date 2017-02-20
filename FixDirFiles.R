@@ -2,8 +2,8 @@
 # reads dir file and prm file, check if dir file is "legal", if not it is fixed
 # install.packages("stringr")
 # library(stringr)
-# root <- "C:/Users/Notandi/Dropbox/Projects/ADAM/RegEx_practice/MBLUP"
-FixDirFiles <- function ( root ) {
+root <- "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP"
+FixDirFiles <- function ( root ) { 
   ############## Find files #####################
   prmfiles <- # find prm files
     list.files(path = root,
@@ -22,7 +22,7 @@ FixDirFiles <- function ( root ) {
   # note that there will need to be too loops, one for folders where there is both a dir
   # file and a prm file, second loop should create dir files where there is none
   for ( i in 1:length( prmfiles ) ) {
-    browser()
+    # browser()
     path <- paste(root, dirfiles[i], sep = "/")
     dir.file <-  readLines(path)
     writeLines(dir.file, paste(path, "bak", sep = "_")) # write backup of each file
@@ -75,16 +75,23 @@ FixDirFiles <- function ( root ) {
       pos.zeros<- pos +grep(x = dir.file[pos:length(dir.file)], pattern = "^0") 
       # pos.integers is the line numbers where the line starts int > 0 
       # pos.zeros is line numb of lines in model section with 0
-      dir.file[pos.integers[1]-1] <-  n.ebv
+      
       diff.in.traits <- dir.nebv - n.ebv # difference in trait numbers
-      for ( i in 1:diff.in.traits ) { 
-        dir.file <- dir.file[-(pos.zeros[i])]
-        dir.file <- dir.file[-(pos.integers[n.ebv+i]-1)] # this does not work
         # need to change it so that it changes the numbers of the hys effect
+        pos.model.lines <- pos-1 +grep(x = dir.file[pos:length(dir.file)], pattern = paste("^", "[", "1-",dir.nebv,"]","(\\s)","0",".*",sep="")) 
+        dir.file <- dir.file[-pos.model.lines]
+        new.model.lines <- c(
+          paste( 
+            n.ebv, sep = ""),
+          paste(rep("0", times = n.ebv+1), sep=""),  
+          paste(
+            seq(1:n.ebv), "0 2", (seq(1:n.ebv) + n.ebv + 5)),
+          paste(rep( "1 1", times = n.ebv), sep=""),
+          paste(rep(0, times= n.ebv)))
+        dir.file <- dir.file[-((pos+1):tail(pos.zeros, n=1))]
+        dir.file <- append(dir.file, new.model.lines, (pos+1))
+        pos.zeros<- pos +grep(x = dir.file[pos:length(dir.file)], pattern = "^0") 
         
-        dir.file <- dir.file[-(pos.integers[2*n.ebv+i]-2)]
-        dir.file <- dir.file[-(pos.zeros[dir.nebv+i]-3)]
-        }
     } else if (dir.nebv < n.ebv) { # less traits in dir file than in prm file
       ############ Fix dir file (shorter) ###################
       # $DATA line
@@ -96,4 +103,4 @@ FixDirFiles <- function ( root ) {
     writeLines(dir.file, path)
     
   }
-}
+}  

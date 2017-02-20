@@ -178,7 +178,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
               prm_file[pos + i] <- paste0(new_designmat[i, ], collapse = " ")
               if ( i == nrow(new_designmat)) { 
                 # browser()
-                prm_file <- prm_file[-((pos+i+((nrow(org_designmat) - nrow(new_designmat))-1)):(pos+i+(nrow(org_designmat) - nrow(new_designmat))))]
+                prm_file <- prm_file[-((pos+i+((nrow(org_designmat) - nrow(new_designmat)))):(pos+i+(nrow(org_designmat) - nrow(new_designmat))))]
               }
               
             }
@@ -196,7 +196,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
               prm_file[pos + i] <- paste0(new_designmat[i, ], collapse = " ")
               if ( i == nrow(new_designmat)) { 
                 # browser()
-                prm_file <- prm_file[-((pos+i+((nrow(org_designmat) - nrow(new_designmat))-1)):(pos+i+(nrow(org_designmat) - nrow(new_designmat))))]
+                prm_file <- prm_file[-((pos+i+((nrow(org_designmat) - nrow(new_designmat)))):(pos+i+(nrow(org_designmat) - nrow(new_designmat))))]
                 }
             }
             # for (i in 1:(nrow(org_designmat) - nrow(new_designmat))) {

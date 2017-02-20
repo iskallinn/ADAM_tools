@@ -32,3 +32,4 @@ MakeVarParm <- function (gmat, resmat) {
     }
   }
 }
+setwd("C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/genomic/")
