@@ -51,7 +51,7 @@ FixDirFiles <- function ( root ) {
     if ( dir.nebv > n.ebv ) { # more traits in dir file than in prm file
       ############ Fix dir file (greater ) ###################
       # $DATA line
-      dir.file[pos] <- paste( "$DATA ASCII ", "(", (n.ebv+5)*3, ",", n.ebv*2,"-9999) dmudat")
+      dir.file[pos] <- paste( "$DATA ASCII ", "(", (n.ebv)*3+5, ",", n.ebv*2,",","-9999) dmudat")
       # $Variable names
       pos <- grep(x = dir.file, pattern = "^\\$VARIABLE") # find the variable line
       pos1 <- pos -1 + grep(x = dir.file[pos:length(prm.file)], pattern = "^([a-z]|[A-Z]).*") # find the lines with names of variables
@@ -61,7 +61,8 @@ FixDirFiles <- function ( root ) {
         paste0(c(
           paste ("id sire dam sex mu"),
           paste(rep("mate"), seq(1:n.ebv), sep = ""),
-          paste(rep("hys"), seq(1:n.ebv), sep = "")
+          paste(rep("hys"), seq(1:n.ebv), sep = ""),
+          paste(rep("time"), seq(1:n.ebv), sep = "")
         ), collapse = " ")
       dir.file[pos1[2]] <-
         paste0(c(
