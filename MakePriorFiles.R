@@ -3,10 +3,10 @@
 library(stringr)
 
 
-root <- "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/"
+# root <- "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/"
 
 MakePriorFiles <- function ( root) {  
-  # browser()
+  browser()
   prmfiles <-
     list.files(path = root,
                pattern = "*.prm$",
@@ -51,8 +51,8 @@ writeLines(prior.file, paste(path, "bak", sep = "_")) # write backup of each fil
       # make such a check, for speed
       # TODO 2: vectorize this, for loops are slow!
     ######### Make new prior file if they do not match #######
-      pos <- grep(x = prm.file, pattern = "ntbv") # find the number of ebv
-      n.tbv <- as.numeric(unlist(str_split( pattern = "=", string = prm.file[pos]))[2])
+      pos <- grep(x = prm_file, pattern = "ntbv") # find the number of ebv
+      n.tbv <- as.numeric(unlist(str_split( pattern = "=", string = prm_file[pos]))[2])
       
       pos  <-
         grep(prm_file, pattern = "polygenicMatrix") # find where the gmatrix begins

@@ -61,7 +61,8 @@ FixDirFiles <- function ( root ) {
         paste0(c(
           paste ("id sire dam sex mu"),
           paste(rep("mate"), seq(1:n.ebv), sep = ""),
-          paste(rep("hys"), seq(1:n.ebv), sep = "")
+          paste(rep("hys"), seq(1:n.ebv), sep = ""),
+          paste(rep("time"), seq(1:n.ebv), sep = "")
         ), collapse = " ")
       dir.file[pos1[2]] <-
         paste0(c(

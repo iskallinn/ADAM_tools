@@ -3,13 +3,17 @@
 # Note, this will not work if the first observation line is in the same line as MaleObservations\FemaleObservations=
 # Note, the function will crash IF the logfile is out of date, i.e. there are no checks to see if the file has been fixed
 
-log.path <- "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/log"
+# log.path <- "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/log"
 # RemoveIllegalObs(log.path)
 RemoveIllegalObs <-  function ( log.path ) {  
   # browser()
 log.file <-   readLines(log.path)
 log.file <-  gsub(pattern = "//", replacement = "/", x = log.file) # dont know why, but there is \\ in the paths
 pos.illegals <- grep(pattern = "illegal obs numb in MaleObservations", x= log.file)
+# if ( pos.illegals == 0) {
+#   pos.illegals <- grep(pattern = "illegal obs numb in FemaleObservations", x= log.file)
+#   } # this doesnt work, need to find a better check
+
 
 for ( i in 1:length(pos.illegals)) { 
   if ( i == 2) { 
@@ -97,7 +101,7 @@ if ( obs.in.file > nobs) {
     del <- grep(x=str_trim(prm_file[pos:(pos+pos1[1])]),pattern = paste("([",1,"]","[",(max.obs.numb-10),"-",(obs.in.file-10),"])","(.*)", sep=""))
     prm_file <-  prm_file[-((pos+head(del, n=1)-1):(pos+tail(del,n=1)-1))] 
   } else if ( max.obs.numb < 10  )  {  
-    del <- grep(x=str_trim(prm_file[pos:pos1[1]]),pattern = paste("([",(max.obs.numb),"-",(obs.in.file),"])","(.*)", sep=""))
+    del <- grep(x=str_trim(prm_file[pos:(pos1[1]+pos)]),pattern = paste("([",(max.obs.numb),"-",(obs.in.file),"])","(.*)", sep=""))
     prm_file <-  prm_file[-((pos+head(del, n=1)-1):(pos+tail(del,n=1)-1))] 
   }
 }  

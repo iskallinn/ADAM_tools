@@ -103,20 +103,27 @@ if ( is.matrix(org_resmat) == TRUE )
           as.numeric(unlist(str_split((
             unlist(str_split(prm_file[(pos)], pattern = "="))[2]
           ), pattern = " ")))
+        pos  <-
+          grep(prm_file, pattern = "nebv") # find where the line with the TEV is located
+        
+        nebv_org <-
+          as.numeric(unlist(str_split((
+            unlist(str_split(str_trim(prm_file[(pos)]), pattern = "="))[2]
+          ), pattern = " ")))
         
         pos  <-
           grep(prm_file, pattern = "ZDirectGenetic") # find where the line with the TEV is located
         prm_dm <-
-          str_trim(prm_file[pos:(pos + nobs_org)]) # remove whitespace from beginning
+          str_trim(prm_file[pos:(pos + ntbv_org)]) # remove whitespace from beginning
         prm_dm <-
           gsub (pattern = "ZDirectGenetic=|/", replacement = NA, prm_dm)
         prm_dm <-
           matrix(c(as.numeric(unlist(
             str_split(unlist(prm_dm)[-is.na(unlist(prm_dm))], pattern = " ")
           ))),
-          nrow = nobs_org,
-          ncol = ntbv_org,
-          byrow = TRUE) # extract the matrix from the prm file
+          nrow = ntbv_org,
+          ncol = nobs_org,
+          byrow = T) # extract the matrix from the prm file
         
 if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if design matrix in prm file is comformable to the 
   # design mat one wants to switch out
@@ -258,37 +265,37 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
         if (TRUE %in% (grep(prm_file, pattern = "ebv_observation")) == FALSE) {
           # figure out if there is ebv_obs
           if (is.matrix(new_ebvobs) == TRUE &
-              is.matrix(org_ebvobs) == TRUE) {
+              is.matrix(org_ebvobs) == TRUE ) { 
+            # browser()
+            
             # figure out if there is a ebv matrix to replace
             pos  <-
               grep(prm_file, pattern = "ebv_observation") # find where the ebv_obs begins
-            if (nrow(new_ebvobs) == nrow(org_ebvobs)) {
-              for (i in 1:nrow(new_ebvobs)) {
-                prm_file[pos + i] <- paste0(new_ebvobs[i,], collapse = " ")
-              }
-            }
-            if (nrow(new_ebvobs) > nrow(org_ebvobs)) {
-              for (i in 1:(nrow(new_ebvobs) - nrow(org_ebvobs))) {
+            pos1 <-
+              +pos -1 +grep(prm_file[pos:length(prm_file)], pattern = "/")[1] # find where the ebv_obs begins
+            # extract ebv matrix from prm file
+            prm_ebvmat <-  matrix(
+              c((as.numeric(
+                unlist(str_split(str_trim(prm_file[(pos + 1):(pos + nobs_org)]), pattern = " "))
+              ))),
+              nrow = nobs_org,
+              ncol =  nebv_org, byrow = T) 
+            if (dim(prm_ebvmat) == dim(org_ebvobs)) {
+              if (FALSE %in% (prm_ebvmat == org_ebvobs) == FALSE) {
+                # only change the matrix if the one from the prm file is equal to the one
+                prm_file <- prm_file[-(pos:pos1)]
                 prm_file <-
-                  append(prm_file, "", (pos + nrow(org_ebvobs)) + i) # first add an empty value at the end of the current matrix
+                  append(
+                    x = prm_file,
+                    values = c(
+                      paste("ebv_observation="),
+                      apply(new_ebvobs, 1, paste, collapse = " "),
+                      "/"
+                    ),
+                    after = pos
+                  )
               }
-              for (i in 1:nrow(new_ebvobs)) {
-                # replace the values
-                prm_file[pos + i] <-
-                  paste0(new_ebvobs[i,], collapse = " ")
-              }
-              
-            } else if (nrow(new_ebvobs) < nrow(org_ebvobs)) {
-              for (i in 1:nrow(new_ebvobs)) {
-                prm_file[pos + i] <- paste0(new_ebvobs[i,], collapse = " ")
-              }
-              for (i in 1:(nrow(org_ebvobs) - nrow(new_ebvobs))) {
-                prm_file <-
-                  prm_file[-(pos + nrow(new_ebvobs) + 1)] # delete lines that were extra
-              }
-            }
-            
-            
+           }          
           } # close is there new_ebvobs & org_ebvobs
         } # close is there ebv_obs
         
@@ -398,6 +405,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
         
       }
       ########## Replace True economic values ############
+    # browser()
       if (is.vector(new_ev) == TRUE &
           new_ev != 0) {
         # check for input
@@ -412,7 +420,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
         for (i in 1:number_of_ev) {
           prm_file[pos + i] <-
             sub(
-              pattern = "(\\d)(\\s)(\\d)(\\s)(\\d.*)",
+              pattern = "(\\d)(\\s)+(\\d)(\\s)+(\\d.*)",
               replacement = paste("\\1\\2\\3\\4", paste0(new_ev, collapse = " "), sep =
                                     ""),
               prm_file[pos + i]
