@@ -84,11 +84,11 @@ FixDirFiles <- function ( root ) {
         new.model.lines <- c(
           paste( 
             n.ebv, sep = ""),
-          paste(rep("0", times = n.ebv+1), sep=""),  
+          paste(rep("0", times = n.ebv), sep=""),  
           paste(
-            seq(1:n.ebv), "0 2", (seq(1:n.ebv) + n.ebv + 5)),
+            seq(1:n.ebv), "0 2", (seq(1:n.ebv) + n.ebv + 5), "1"),
           paste(rep( "1 1", times = n.ebv), sep=""),
-          paste(rep(0, times= n.ebv)))
+          paste(rep(0, times= (n.ebv+1))))
         dir.file <- dir.file[-((pos+1):tail(pos.zeros, n=1))]
         dir.file <- append(dir.file, new.model.lines, (pos+1))
         pos.zeros<- pos +grep(x = dir.file[pos:length(dir.file)], pattern = "^0") 
