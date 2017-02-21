@@ -7,12 +7,17 @@
 # install.packages("stringi")
 # library(stringr) # < ------ NEEDED 
 # library(stringi)   # < ------ NEEDED
+<<<<<<< HEAD
 ScaleThatThing <- function (root, scaling.factor) {
+=======
+ScaleThatThing <- function ( root, scaling.factor) { 
+>>>>>>> e666baeeb43e4757d915bd94149cb0634477ab1d
   prm.files <-
     list.files(path = root,
                pattern = "*.prm$",
                recursive = T)
   for (i in 1:length(prm.files)) {
+<<<<<<< HEAD
     path <- paste(root, prm.files[i], sep = "")
     prm.file <- readLines(path)
     pos <-
@@ -51,3 +56,24 @@ ReplaceNumbers <- function (selection.lines , scaling.factor) {
   
   return(x)
 }
+=======
+    path <- paste(root, prm.files[i], sep="")
+  prm.file <- readLines(path)
+    pos <- grep ( pattern = "selection_scheme=", x = prm.file) # finds the line for selection schemes
+  n.sel.lines <- as.numeric(unlist(str_split(string=prm.file[grep(pattern="selection_groups", x=prm.file)], pattern = "="))[2])
+  selection.lines <- as.matrix(prm.file[(pos+1):(pos+n.sel.lines)])
+  as.numeric(unlist(str_split(string = str_trim(selection.lines[1]), pattern ="(\\s+)"))[15])
+  selection.lines <- apply(t(apply(selection.lines, 1, FUN = ReplaceNumbers, scaling.factor = 10)), 1,FUN=stri_flatten,collapse=" ")
+  prm.file <- prm.file[-((pos+1):(pos+n.sel.lines))] 
+  prm.file <- append(prm.file, selection.lines, after = pos)
+  writeLines(prm.file, path) 
+   }
+}
+
+ReplaceNumbers <- function ( selection.lines , scaling.factor ) { 
+  x <- unlist(str_split(string = str_trim(selection.lines[1]), pattern ="(\\s+)"))
+  x[15] <- as.numeric(unlist(str_split(string = str_trim(selection.lines[1]), pattern ="(\\s+)"))[15])*scaling.factor
+  
+  return(x)
+  }
+>>>>>>> e666baeeb43e4757d915bd94149cb0634477ab1d
