@@ -7,7 +7,7 @@
 # install.packages("stringi")
 # library(stringr) # < ------ NEEDED 
 # library(stringi)   # < ------ NEEDED
-ScaleThatThing <- function (root, scaling.factor) {
+ScaleThatThing <- function ( root, scaling.factor) { 
   prm.files <-
     list.files(path = root,
                pattern = "*.prm$",
