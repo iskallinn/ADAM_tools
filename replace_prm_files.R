@@ -55,13 +55,14 @@ LarissaFixMyPrmFiles <-
       writeLines(prm_file, paste(path, "bak", sep = "_")) # write backup of each file
       prm_file <- gsub(pattern="\t", replacement = " ", x=prm_file) # remove all tabs from the input file, makes life easier
     # I begin by checking if the org_gmatrix argument fits to the matrix in the i'th prm file
+      browser()
 if (is.matrix(org_gmat) == TRUE) { 
   pos  <-
         grep(prm_file, pattern = "polygenicMatrix") # find where the gmatrix begins
     ############# Checks ################
       gmatrix.check <- (FALSE %in% (matrix(
         c((as.numeric(
-          unlist(str_split(prm_file[(pos + 1):(pos + nrow(org_gmat + 1))], pattern = " "))
+          unlist(str_split(str_trim(prm_file[(pos + 1):(pos + nrow(org_gmat + 1))]), pattern = " "))
         ))),
         nrow = nrow(org_gmat),
         ncol = ncol(org_gmat)
@@ -77,7 +78,7 @@ if ( is.matrix(org_resmat) == TRUE )
   {      
   resmatrix.check <-  (FALSE %in% (matrix(
           c((as.numeric(
-            unlist(str_split(prm_file[(pos + 1):(pos + nrow(org_gmat + 1))], pattern = " "))
+            unlist(str_split(str_trim(prm_file[(pos + 1):(pos + nrow(org_gmat + 1))]), pattern = " "))
           ))),
           nrow = nrow(org_resmat),
           ncol = ncol(org_resmat)

@@ -16,12 +16,12 @@ RenameOutPut <- function ( root ) {
         pattern = paste("(OutDirectory=)", "(.*)", sep = ""),
         replacement = paste(
           "\\1",
-          "'/usr/home/qgg/kari/OP_ROUNDUP/GENOMIC/",
+          "'/usr/home/qgg/kari/OP_FORTITUDE/",
           gsub(
             x = prmfiles[i],
             pattern = "(^.*/)(input.prm)",
             replacement = "\\1"
-          ),
+          ),"'",
           sep = ""
         ),
         "'",
@@ -44,4 +44,22 @@ RenameOutPut <- function ( root ) {
   }
   root <- "C:/Users/au384062/Dropbox/Projects/ADAM/OP_ROUNDUP/GENOMIC/"
   RenameOutPut(root, old_name, new_name)
+  
+  # function to copy all the adam.script files, change it to gbi-short and save it with another name
+  MakeQuickSubmitFiles <- function ( root ) { 
+    prmfiles <-
+      list.files(path = root,
+                 pattern = "adam.script$",
+                 recursive = T)
+    for ( i in 1:length(prmfiles)) {
+      path <- paste(root,prmfiles[i], sep = "")
+      prm.file <- readLines(path)
+      pos <- grep(pattern = "(#PBS -q gbi)", x=prm.file)
+      prm.file[pos] <- paste("#PBS -q gbi-short")
+        
+      pos <- grep(pattern = "(#PBS -l walltime=200:00:00)", x=prm.file)
+      prm.file[pos] <-paste("#PBS -l walltime=1:59:00", sep = "")
+      shortpath  <- gsub(path, pattern = "(.*)(/adam.script)", replacement = "\\1/adam_short.script" )
+      writeLines(prm.file, shortpath) }
+  }
   
