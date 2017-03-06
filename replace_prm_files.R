@@ -29,7 +29,9 @@ LarissaFixMyPrmFiles <-
             org_ebvobs = 0,         # for namelist DMU
             org_ev = 0,             # orginal economic values
             org_resmat = 0,         # orginal residuals (WDirectError)
-            org_tev = 0 )           # orginal tev
+            org_tev = 0,
+            org_selLines = 0,
+            new_selLines = 0)           # orginal tev
   {
     # browser()
 # for some dire reason this check doesnt work anymore, something to do with working directory i think
@@ -88,8 +90,11 @@ if ( is.matrix(org_resmat) == TRUE )
   }     
 
   
-    design.check <- ( is.matrix(new_designmat) == TRUE & is.matrix(org_designmat == TRUE)) # check if the program should bother with designmat
-              
+design.check <- ( is.matrix(new_designmat) == TRUE & is.matrix(org_designmat == TRUE)) # check if the program should bother with designmat
+ev.check <- ( is.matrix(new_ev) == TRUE & is.matrix(org_ev == TRUE))             
+ebvobs.check <-  ( is.matrix(new_ebvobs) == TRUE & is.matrix(org_ebvobs == TRUE))
+tev.check <- ( is.matrix(new_tev) == TRUE & is.matrix(org_tev == TRUE))
+sel.lines.check <- ( is.character(new_selLines) == TRUE & is.character(org_selLines) == TRUE)
       ########### Design matrices and number of traits ##############
       if (design.check == TRUE) {
         pos  <-
@@ -385,7 +390,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
         }
       }
       # browser()
-      ########## Replace TBV ############
+      ########## Replace True economic value ############
       if (is.vector(new_tev) == TRUE &
           new_ev != 0) {
         # first check if the input is there
@@ -405,10 +410,10 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
         }
         
       }
-      ########## Replace True economic values ############
+ ########## Replace economic values ############
     # browser()
       if (is.vector(new_ev) == TRUE &
-          new_ev != 0) {
+          ev.check == T) {
         # check for input
         pos  <-
           grep(prm_file, pattern = "nEconomicValueEbv") # find where the line with the EV is located
@@ -428,7 +433,31 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
             )
         }
       }
-      ############ check if there are illegal obs numbers #############
+############ Replace selection lines ##################
+if (sel.lines.check == TRUE) { 
+  pos  <-
+    grep(prm_file, pattern = "selection_scheme=") # find where the selection lines begin
+  pos1  <-pos+
+    grep(prm_file[pos:length(prm_file)], pattern = "/")[1]-1 # find where the selection lines begin
+  
+  prm_file <- prm_file[-(pos:pos1)]
+  prm_file <-
+    append(
+      x = prm_file,
+      values = c(
+        paste(
+          "selection_scheme="),
+        new_selLines,
+        "/"
+      ),
+      after = pos
+    )
+  pos  <-
+    grep(prm_file, pattern = "selection_groups=") # find where the selection lines begin
+  prm_file[pos] <- paste("selection_groups=", length(new_selLines), sep="")
+  
+  }
+############ check if there are illegal obs numbers #############
       pos  <-
         grep(prm_file, pattern = "nobs") # find where the line with the TEV is located
       
