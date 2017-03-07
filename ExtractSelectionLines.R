@@ -22,5 +22,6 @@ ExtractSelectionLines <-function ( pathtofile ) {
   if (TRUE %in%( str_detect(selection.lines, pattern = "/")) == TRUE)  {
     selection.lines <-   selection.lines[!str_detect(selection.lines, pattern = "/")]
   }
+  selection.lines <-   selection.lines[str_detect(selection.lines, pattern = "(\\d)+")]
   return(selection.lines)
   }

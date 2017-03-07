@@ -15,6 +15,9 @@ library(stringr)
 # TODO 
 # currently it is not possible to switch out an dmu observation matrix if there is no design matrix changes
 
+# NOTE 
+# replacement of selection schemes is currently not working as intended. Does work but only for cases
+# where the scheme to be replaced exactly fits the one which is supposed to be changed out. 
 LarissaFixMyPrmFiles <-
   function (root,
             # the highest directory in which the functions works, searches in all lower directories for prm file
@@ -57,7 +60,7 @@ LarissaFixMyPrmFiles <-
       writeLines(prm_file, paste(path, "bak", sep = "_")) # write backup of each file
       prm_file <- gsub(pattern="\t", replacement = " ", x=prm_file) # remove all tabs from the input file, makes life easier
     # I begin by checking if the org_gmatrix argument fits to the matrix in the i'th prm file
-      browser()
+      # browser()
 if (is.matrix(org_gmat) == TRUE) { 
   pos  <-
         grep(prm_file, pattern = "polygenicMatrix") # find where the gmatrix begins
@@ -435,11 +438,24 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
       }
 ############ Replace selection lines ##################
 if (sel.lines.check == TRUE) { 
+  browser()
   pos  <-
     grep(prm_file, pattern = "selection_scheme=") # find where the selection lines begin
   pos1  <-pos+
     grep(prm_file[pos:length(prm_file)], pattern = "/")[1]-1 # find where the selection lines begin
+  selection.lines <- prm_file[pos:pos1]
   
+  selection.array <-
+    matrix(unlist(str_split(str_trim(selection.lines[str_detect(string = selection.lines, pattern = "(\\d)")]), pattern = "\\s+")),
+           nrow = (as.numeric(unlist(str_split(prm_file[grep(prm_file, pattern = "selection_groups")],pattern="="))[2]) ),
+           ncol = 26, # this is fixed, the number of elements in each line in the selection scheme
+           byrow = T)
+org_sel_array <-  matrix(unlist(str_split(str_trim(org_selLines[str_detect(string = org_selLines, pattern = "(\\d)")]), pattern = "\\s+")),
+                         nrow = length(org_selLines),
+                         ncol = 26, # this is fixed, the number of elements in each line in the selection scheme
+                         byrow = T)
+if (nrow(selection.array) == nrow(org_sel_array)){
+  if (FALSE %in% (selection.array == org_sel_array) == FALSE) { # make sure that it doesnt switch out matrices that are different
   prm_file <- prm_file[-(pos:pos1)]
   prm_file <-
     append(
@@ -455,7 +471,7 @@ if (sel.lines.check == TRUE) {
   pos  <-
     grep(prm_file, pattern = "selection_groups=") # find where the selection lines begin
   prm_file[pos] <- paste("selection_groups=", length(new_selLines), sep="")
-  
+  }}
   }
 ############ check if there are illegal obs numbers #############
       pos  <-
