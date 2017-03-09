@@ -1,7 +1,7 @@
 # Function for manipulating prm files over whole directory structures, subdirectories, searching for prm files
 # install.packages("stringr") # <--- Need to install this
 library(stringr)
-# 
+#
 # root <-
 #   "C:/Users/au384062/Dropbox/Projects/ADAM/RegEx_practice/MBLUP/"
 
@@ -94,7 +94,7 @@ if ( is.matrix(org_resmat) == TRUE )
 
   
 design.check <- ( is.matrix(new_designmat) == TRUE & is.matrix(org_designmat == TRUE)) # check if the program should bother with designmat
-ev.check <- ( is.matrix(new_ev) == TRUE & is.matrix(org_ev == TRUE))             
+ev.check <- (  FALSE %in% (length(new_ev) > 1  & length(org_ev) > 1) == FALSE)             
 ebvobs.check <-  ( is.matrix(new_ebvobs) == TRUE & is.matrix(org_ebvobs == TRUE))
 tev.check <- (  FALSE %in% (length(new_tev) > 1  & length(org_tev) > 1) == FALSE) # checks if the vectors are longer than 1
 sel.lines.check <- ( is.character(new_selLines) == TRUE & is.character(org_selLines) == TRUE)
@@ -415,7 +415,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
         } else if (FALSE %in% is.na(t) ==  FALSE) {
           t <-
             as.numeric(unlist(str_split((
-              unlist(str_split(prm_file[(pos+1)], pattern = " "))
+              unlist(str_split(str_trim(prm_file[(pos+1)]), pattern = " "))
             ), pattern = " ")))
           if (FALSE %in% (org_tev == t) == FALSE) {
             # first check if the economic value in the prm file match the one we are switching out
