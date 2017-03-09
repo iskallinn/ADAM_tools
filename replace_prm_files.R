@@ -96,7 +96,7 @@ if ( is.matrix(org_resmat) == TRUE )
 design.check <- ( is.matrix(new_designmat) == TRUE & is.matrix(org_designmat == TRUE)) # check if the program should bother with designmat
 ev.check <- ( is.matrix(new_ev) == TRUE & is.matrix(org_ev == TRUE))             
 ebvobs.check <-  ( is.matrix(new_ebvobs) == TRUE & is.matrix(org_ebvobs == TRUE))
-tev.check <- ( is.matrix(new_tev) == TRUE & is.matrix(org_tev == TRUE))
+tev.check <- (  FALSE %in% (length(new_tev) > 1  & length(org_tev) > 1) == FALSE) # checks if the vectors are longer than 1
 sel.lines.check <- ( is.character(new_selLines) == TRUE & is.character(org_selLines) == TRUE)
       ########### Design matrices and number of traits ##############
       if (design.check == TRUE) {
