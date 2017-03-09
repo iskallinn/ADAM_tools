@@ -96,7 +96,7 @@ if ( is.matrix(org_resmat) == TRUE )
 design.check <- ( is.matrix(new_designmat) == TRUE & is.matrix(org_designmat == TRUE)) # check if the program should bother with designmat
 ev.check <- ( is.matrix(new_ev) == TRUE & is.matrix(org_ev == TRUE))             
 ebvobs.check <-  ( is.matrix(new_ebvobs) == TRUE & is.matrix(org_ebvobs == TRUE))
-tev.check <- ( is.matrix(new_tev) == TRUE & is.matrix(org_tev == TRUE))
+tev.check <- (  FALSE %in% (length(new_tev) > 1  & length(org_tev) > 1) == FALSE) # checks if the vectors are longer than 1
 sel.lines.check <- ( is.character(new_selLines) == TRUE & is.character(org_selLines) == TRUE)
       ########### Design matrices and number of traits ##############
       if (design.check == TRUE) {
@@ -394,8 +394,7 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
       }
       # browser()
       ########## Replace True economic value ############
-      if (is.vector(new_tev) == TRUE &
-          new_ev != 0) {
+      if (tev.check == TRUE) {
         # first check if the input is there
         pos  <-
           grep(prm_file, pattern = "economicValueTbv") # find where the line with the TEV is located
@@ -404,6 +403,8 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
           as.numeric(unlist(str_split((
             unlist(str_split(prm_file[(pos)], pattern = "="))[2]
           ), pattern = " ")))
+        
+        if (FALSE %in% is.na(t) ==  TRUE) { # check if there is a newline
         # this rather convoluted thing is to extract the TEV from the prm file, change it into numeric
         t <- t[-is.na(t)]
         if (TRUE %in% (org_tev == t) == TRUE) {
@@ -411,8 +412,19 @@ if (FALSE %in% (dim(prm_dm) == dim(org_designmat))== FALSE) { # first check if d
           prm_file[pos] <-
             paste0(c("economicValueTbv=", (new_tev)), collapse = " ") # replace TEV
         }
+        } else if (FALSE %in% is.na(t) ==  FALSE) {
+          t <-
+            as.numeric(unlist(str_split((
+              unlist(str_split(prm_file[(pos+1)], pattern = " "))
+            ), pattern = " ")))
+          if (FALSE %in% (org_tev == t) == FALSE) {
+            # first check if the economic value in the prm file match the one we are switching out
+            prm_file[pos+1] <- paste(new_tev, collapse =" ") # replace TEV
+              
+        }
         
-      }
+        } 
+        }
  ########## Replace economic values ############
     # browser()
       if (is.vector(new_ev) == TRUE &
