@@ -1,22 +1,26 @@
 # mass submit to quoue
-# setwd( "C:/Users/au384062/Dropbox/Projects/ADAM/OP_ROUNDUP/MBLUP")
+setwd( "C:/Users/au384062/Dropbox/Projects/ADAM/OP_FORTITUDE/SBLUP")
 
 # usage = change root folder to the folder which one wants to run the script
 # the script searches recursively through the subdirectories from root and makes a line with all script files
-
-root <- "C:/Users/au384062/Dropbox/Projects/ADAM/OP_ROUNDUP/MBLUP" 
-MakeSuperSubmit <- function ( root ) {
+# best way would be to run this script on the cluster :) then it doesnt need two arguments
+root <- "C:/Users/au384062/Dropbox/Projects/ADAM/OP_FORTITUDE/SBLUP" 
+root.on.cluster <- "/usr/home/qgg/kari/OP_FORTITUDE/SBLUP/"
+MakeSuperSubmit <- function ( root ,root.on.cluster) {
+  # browser()
   scripts <-as.matrix(
     list.files(path = root,
-               pattern = "*.script$",
+               pattern = "*adam_short.script$",
                recursive = T))
-  
-submit <- file(description =  "submit")
+paths <- gsub(pattern = "adam_short.script$",x = scripts, replacement = "")
+submit <- file(description =  "submit", open="w")
 con <- submit
-cat(paste("#!/bin/bash"), file = con)
-cat("\n", file = con, append = T)
-###############################################################
-# NOTE the path below also needs to be changed!!!! ############
-###############################################################
-cat(paste("qsub ","/usr/home/qgg/kari/OP_ROUNDUP/MBLUP/", apply(scripts, 1, paste, "\n"), sep=""), file = con, append = T)
-}
+# cat(paste("#!/bin/bash"), file = con) # this doesnt work bc of windows portability
+# cat("\n", file = con, append = T)
+for (i in 1:length(scripts)) {
+  cat(paste("cd", paste(root.on.cluster, paths[i], sep="")), "\n", file = con, append = T)
+  # cat("\n", file = con, append = T)
+  cat(paste( "qsub ", paste(root.on.cluster,scripts[i]), sep=""),"\n", file = con, append =T)
+  # cat("\n", file = con, append = T)
+} 
+} 
