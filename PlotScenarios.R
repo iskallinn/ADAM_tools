@@ -2,7 +2,7 @@ library(ggplot2)
 library(stringr)
 
 # function that makes plot of progression in ADAM scenarios. Searches folders below the root folder
-root <- "C:/Users/au384062/Dropbox/Projects/ADAM/OP_FORTITUDE/MBLUP"
+root <- "C:/Users/au384062/Dropbox/Projects/ADAM/OP_FORTITUDE/GENOMIC/"
 
 PlotScens <- function( root ,ntime) {
   setwd(root)
