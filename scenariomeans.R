@@ -1,6 +1,6 @@
 ## Root directory and libraries
 
-root <- 'YOUR DIRECTORY'
+root <- 'C:/Users/au384062/Dropbox/Projects/ADAM/OP_FORTITUDE'
 setwd(root)
 
 library(stringr)
@@ -8,42 +8,34 @@ library(stringr)
 #######################################
 # Read simulation means from res file #
 
-ntime = 150     #Number of time steps
-tsyear = 6      #Number of time steps per year
+ntime = 10     #Number of time steps
+tsyear = 1      #Number of time steps per year
 
 
 all_paths <-
   list.files(path = root,
              pattern = "geneticTrendsMeans.res$",
              recursive = T) 
-
-
-for (i in 1:length(all_paths))
-{
+number.of.intervals <- round(ntime/5, digits = 0) # figures out how many five year intervals to calculate
+results <- matrix(0, nrow = length(all_paths), ncol = (number.of.intervals+1)) # makes matrix to hold results
+colnames(results) <- c("scenario", paste("interval", 1:number.of.intervals, sep = "")) # makes column names
+for (i in 1:length(all_paths)) {
   path <- all_paths[i]
-  
-  scenario <- lapply(strsplit(path,"/"), '[', 1)
   
   x <- read.table(file=path, header = T, nrows=ntime+1)
   x <- x[c("time","BV")]      #change if needed
-  
-  y15 <- subset(x,time>1*tsyear-1&time<1+5*tsyear);         x1 <- colMeans(y15);         #Mean of Year 1 to 5
-  y610 <- subset(x,time>6*tsyear-1&time<1+10*tsyear);       x2 <- colMeans(y610)         #Mean of Year 6 to 10
-  y1115 <- subset(x,time>11*tsyear-1&time<1+15*tsyear);     x3 <- colMeans(y1115)        #Mean of Year 11 to 15
-  y1620 <- subset(x,time>16*tsyear-1&time<1+20*tsyear);     x4 <- colMeans(y1620)        #Mean of Year 16 to 20
-  y2125 <- subset(x,time>21*tsyear-1);                      x5 <- colMeans(y2125)        #Mean of Year 21 to 25
-  
-  y <- cbind(scenario,year1t5=x1[c("BV")], year6t10=x2[c("BV")], year11t15=x3[c("BV")], year16t20=x4[c("BV")], year21t25=x5[c("BV")])
-
-    if ( i == 1 ) 
-    {
-      results <- y
-    } 
-    else 
-    {
-      results <- rbind(results, y)
+  for ( n in 1:number.of.intervals) { 
+    if ( n == 1 ) { # For the first year we do this
+      x1 <- subset(x, time >= 0 & time < 5*tsyear)
+      results [i,1] <- path
+      results[i,2] <- (x1[5,2]-x1[1,2])/5
+      
+  } else if (n > 1 ) {
+    x1 <- subset(x, time >= (5*n-4*(n-1))*tsyear & time <= (n*5)*(n-1)*tsyear) # this is to make sure the program picks the rights rows
+    results [i,1] <- gsub(path, pattern = "geneticTrendsMeans.res", replacement = "") # get the name for the scenario
+    results[i,3] <- (x1[5,2]-x1[1,2])/5
     }
-  print(scenario)
+  }
 }
 
 ## Writes results to a .csv file
