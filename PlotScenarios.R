@@ -47,5 +47,5 @@ results$time <- as.integer(results$time)
 
 p <-  ggplot(data = results, aes(x=time, y=BV,group=scenario))+
   geom_line(aes(colour=scenario),size=1)+geom_ribbon(aes(ymin=BV_lower, ymax=BV_upper,fill=scenario),alpha=0.15)
-return(p)
+return(results)
 } 
